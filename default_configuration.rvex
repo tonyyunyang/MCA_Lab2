@@ -1,0 +1,55 @@
+
+# This file configures your r-VEX platform. The platform may contain one or
+# more individually configurable cores. This example file only contains one. To
+# instantiate more cores, simply make more [core] tags with all of the
+# configuration parameters underneath it.
+
+###############################################################################
+[core]
+###############################################################################
+
+# Configures issue width, multiplier, and reconfigurablity. Each digit
+# represents a lane, starting with lane 0. A zero means that no multiplier
+# exists in the given lane, a one means that there is. The total number of
+# digits must be 2, 4, or 8, to select the issue width. For non-reconfigurable
+# cores, the branch unit is always instantiated in the last lane, and the
+# memory unit is always instantiated in the first lane.
+#
+# If you want a reconfigurable core, insert colons (:) between the groups of
+# unseparable lanes (lane groups). The places where you can insert these
+# boundaries are subject to constraints; the only possible configurations
+# (including static cores) are:
+#
+#   ab:ab:ab:ab - four lane groups, four contexts; can behave as 1x8, 2x4,
+#                   4x2, or 1x4+2x2.
+#   abcd:abcd   - two lane groups, two contexts; can behave as 1x8 or 2x4.
+#   abcdefgh    - static 8-way core (1x8).
+#   ab:ab       - two lane groups, two contexts; can behave as 1x4 or 2x2.
+#   abcd        - static 4-way core (1x4).
+#   ab          - static 2-way core (1x2).
+#
+# Replace a-h with 0 or 1 to select your multiplier configuration. There must
+# be at least one multiplier. As you can see, the multiplier configurations of
+# the lane groups must match.
+CONFIG = 1111
+
+# Stop bit configuration. This value must be 2, 4, or 8, and must be less than
+# or equal to the issue width. The number of syllables in a bundle must be an
+# integer multiple of this value. That is, if there is not enough
+# instruction-level parallelism, NOP syllables must be appended to the bundle
+# to meet the constraint. These "horizontal NOPs" do not slow the program down
+# directly (as the NOPs are executed in parallel to useful instructions), but
+# they do increase the size of the executable and thus affect instruction cache
+# behavior. Thus, for speed, you want this number as low as possible. The cost
+# is area.
+STOPBIT = 4
+
+# Instruction cache size in bytes. This must be a power of two, and must be at
+# least the issue width times 8 bytes (= 2 cache lines). Append a k to specify
+# the value in kiB. The practical upper limit is around 64k.
+ICACHE = 16k
+
+# Data cache size in bytes. This must be a power of two, and must be at least
+# 8 bytes (= 2 cache lines). Append a k to specify the value in kiB. The
+# practical upper limit is around 32k.
+DCACHE = 4k

@@ -1,0 +1,39 @@
+CR_CRR is a global variable, which can be set in the main function of every main-core*-ctxt*.c (starting in main-core0-ctxt0.c), e.g.,
+
+File: main-core0-ctxt0.c
+--------------------------
+int main(void) {
+
+CR_CRR=0x01;
+
+// Run the fir benchmark and log performance.
+fir_main();
+log_perfcount("fir");
+
+CR_CRR=0x11;
+
+// Run the matrix benchmark and log performance.
+matrix_main();
+log_perfcount("matrix");
+}
+
+File: main-core0-ctxt1.c
+--------------------------
+int main(void) {
+
+// Run the convolution_7x7 benchmark and log performance.
+convolution_7x7_main();
+log_perfcount("convolution_7x7");
+
+CR_CRR=0x00;
+}
+
+In this example the CONFIG parameter in configuration.rvex is set as CONFIG = 1111:1111, which means that there is one physical core (core0) and there are two lane groups (contexts).
+CR_CRR=0x01 means we map the first lane group to context 1, and the second lane group to context 0. There are now 2 virtual cores, and the two benchmarks will run in parallel (benchmark fir will run on context 0 (see file name) and benchmark convolution_7x7 will run on context 1 (see file name)).
+After the fir benchmark finishes, CR_CRR is set to 0x11, which means both lane groups will be mapped to context 1 (all the resources from context 0 will be dedicated to the computations on context 1 - assuming fir benchmark finshes faster than convolution_7x7 benchmark).
+
+CR_CRR is set to 0x00 after convolution_7x7 benchmark finishes, meaning all resources are mapped to context 0, and matrix benchmark will start to run.
+
+For further details please check page C-83 of Assignment_2_r-VEX.pdf.
+
+Note: If there are no results in run*-core*-ctxt*.log, the possible reason is lacking resources in hardware configuration (CONFIG).
